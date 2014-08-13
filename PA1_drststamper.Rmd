@@ -1,0 +1,13 @@
+---
+title: "PA1_drststamper"
+author: "drs. T. Stamper"
+date: "Wednesday, August 13, 2014"
+output: html_document
+---
+
+# Reproducible Research: Peer Assessment 1
+## Loading and preprocessing the data
+## What is mean total number of steps taken per day?
+## What is the average daily activity pattern?
+## Imputing missing values
+## Are there differences in activity patterns between weekdays and weekends?
