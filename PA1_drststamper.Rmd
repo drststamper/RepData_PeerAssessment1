@@ -1,13 +1,82 @@
 ---
 title: "PA1_drststamper"
 author: "drs. T. Stamper"
-date: "Wednesday, August 13, 2014"
+date: "Thursday, August 14, 2014"
 output: html_document
 ---
 
 # Reproducible Research: Peer Assessment 1
 ## Loading and preprocessing the data
+
+Since I use packages, I make sure these are loaded. Also note that I omit the NA values first. 
+
+```{r}
+require("reshape2")  
+  
+  #read in the data & remove NA values
+  data <- read.csv("activity.csv", stringsAsFactors=FALSE) 
+  complete_data <- na.omit(data)
+```
+
+
 ## What is mean total number of steps taken per day?
+
+In order to answer this question, I have made use of melt() and dcast() provided by the reshape2 package, to compute the total nr of steps for each day. See the snippet below:
+
+```{r}
+#compute the total nr of steps for each day (using melt & dcast)
+  melt_data <- melt(complete_data, id="date", measure.vars = "steps")
+  res_data <- dcast(melt_data, date ~ variable, sum)
+```
+
+Note that 'res_data' refers to the resulting dataframe. Based on this dataframe, I created a histogram using
+the number of steps as the variable:
+
+```{r}
+#create the histogram + add labels to improve readability
+  hist(res_data$steps, breaks = 20, main = "Histogram for the total number of steps per day", xlab= "total number of steps for a day", ylab="number of days this total occurs")
+```
+
+In order to be better able to 'read' the histogram, I chose to have 10 'bars' (after some playing around), each representing a certain frequency group (per 1000 steps). Take, for example, the first bar on the left. This should be interpreted as: *"there are 2 days where the total number of steps is in the range 0-1000".*
+
+Looking at the histogram, it can be seen that the majority of the days have a steps total between 10000-11000. It is likely that the mean and median will be between these values (10000-11000). A simple computation of these statistical values proves this:
+
+```{r}
+mean(res_data$steps)
+median(res_data$steps)
+```
+
 ## What is the average daily activity pattern?
+
+To create the time series plot, I followed a similar set of steps as with the previous question. I used melt() and dcast() to get the desired dataset:
+
+```{r}
+#compute the total nr of steps for each day (using melt & dcast)
+  molten_data <- melt(complete_data, id="interval", measure.vars = "steps")
+  result_data <- dcast(molten_data, interval ~ variable, mean)
+```
+
+The plot can now be created. I used the base plotting system for this plot. I make use of the 'xaxt = n' parameter to add a customized x-axis, so that the number of 'ticks' displayed is reduced (and readability is improved):
+
+```{r}
+#create the plot, without x-axis
+plot(result_data$interval, result_data$steps, type="l", col="blue", main = "Average nr of steps per 5 min interval", 
+     xlab="interval", ylab="average number of steps (over all days)", xaxt="n")#xaxt="n" will prevent the x-axis from being filled
+
+#add the x-axis with values that reduce the total number of ticks displayed (=better readability)
+axis(side=1, at=c(0,500,1000,1500,2000,2500))
+```
+
+From this plot, one can derive the maximumvalue. If you look at the plot, this maximum value occurs somewhere between interval (+/-)800-1000. The code below shows how the exact value is computed:
+
+```{r}
+#derive the index at which the nr of steps is maximal
+maximum_ind <- which.max(result_data$steps)
+
+#what interval is this?
+result_data[maximum_ind, 1]
+```
+
+
 ## Imputing missing values
 ## Are there differences in activity patterns between weekdays and weekends?
