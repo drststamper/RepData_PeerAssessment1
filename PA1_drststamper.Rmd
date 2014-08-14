@@ -51,7 +51,7 @@ median(res_data$steps)
 To create the time series plot, I followed a similar set of steps as with the previous question. I used melt() and dcast() to get the desired dataset:
 
 ```{r}
-#compute the total nr of steps for each day (using melt & dcast)
+#compute the average nr of steps for each interval (using melt & dcast)
   molten_data <- melt(complete_data, id="interval", measure.vars = "steps")
   result_data <- dcast(molten_data, interval ~ variable, mean)
 ```
